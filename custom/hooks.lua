@@ -1,0 +1,3 @@
+local hooks = {}
+
+return hooks

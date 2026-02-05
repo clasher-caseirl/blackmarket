@@ -1,0 +1,263 @@
+/* Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Kanit&display=swap");
+
+/* Base stuff */
+* {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+body {
+    background: grey;
+}
+
+/* Root palette */
+:root {
+    --bg: #141414;
+    --bg2: #313030;
+    --bg3: rgba(0, 0, 0, 0.5);
+    
+    --text_primary: #1f1e1e;
+    --text_secondary: #b4b4b4;
+    --screen_bg: #3C412C;
+    --shadow: inset 0px 1px 3px 0px rgba(0, 0, 0, 0.75), inset -1px -1px rgba(0, 0, 0, 0.75);
+    --gradient: linear-gradient(to right, #323030, #000000);
+
+    --header_font: "Kanit";
+}
+
+/* Main container */
+#app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+}
+
+/* Phone */
+.phone_container {
+    position: fixed;
+    bottom: 5vh;
+    right: 3vw;
+    width: 12vw;
+    height: 45vh;
+    border-radius: 24px;
+    background-color: var(--bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1vh;
+    border: 3px solid var(--bg3);
+}
+
+.phone_header {
+    width: 100%;
+    height: 12%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1vh;
+}
+
+.top_speaker {
+    margin-top: 5px;
+    width: 2vw;
+    height: 1vh;
+    background: var(--bg2);
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+}
+
+.brand {
+    color: var(--text_secondary);
+    font-family: var(--header_font);
+    font-weight: bold;
+    font-size: 1.2vh;
+    opacity: 0.2;
+}
+
+.screen_container {
+    width: 100%;
+    height: 35vh;
+    background: var(--gradient);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    margin-bottom: 1vh;
+}
+
+.screen {
+    width: 85%;
+    height: 75%;
+    background-color: var(--screen_bg);
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: var(--shadow);
+}
+
+.screen_content {
+    font-family: "Nokia";
+    font-size: 1vh;
+    text-align: center;
+    white-space: pre-wrap;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    color: var(--text_primary);
+}
+
+.keypad {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5vh;
+    margin-top: 0.5vh;
+}
+
+.key {
+    width: 95%;
+    padding: 1vh;
+    border: none;
+    box-shadow: var(--shadow);
+    border-radius: 12px;
+    background: var(--gradient);
+    color: var(--text_secondary);
+    font-size: 1.5vh;
+    text-align: center;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    opacity: 0.5;
+    outline: none;
+    cursor: pointer;
+}
+
+.key:hover {
+    opacity: 1;
+}
+
+.key .letters {
+    font-size: 0.85vh;
+}
+
+.footer {
+    width: 100%;
+    height: 7.5%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.btm_speaker {
+    margin-top: 1vh;
+    width: 1vw;
+    height: 1vh;
+    background: var(--bg2);
+    border-radius: 30px;
+    box-shadow: var(--shadow);
+}
+
+#screen_content .line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1px 0;
+}
+
+.signal_bars {
+    position: absolute;
+    left: 1.7vw;
+    top: 8vh;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.signal_bar {
+    width: 0.15vw;
+    height: 2vh;
+    margin-bottom: 3px;
+    margin-left: 0.45vw;
+    background-color: var(--text_primary);
+    border-radius: 1vh;
+}
+
+.signal_icon {
+    margin-top: 5px;
+}
+
+.battery_bars {
+    position: absolute;
+    right: 1.6vw;
+    top: 8vh;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.signal_bars i,
+.battery_bars i {
+    font-size: 1.5vh;
+    padding: 2px;
+    color: var(--text_primary);
+}
+
+.battery_bar {
+    width: 0.15vw;
+    height: 2vh;
+    margin-bottom: 3px;
+    margin-left: 0.45vw;
+    background-color: var(--text_primary);
+    border-radius: 1vh;
+}
+
+.battery_icon {
+    margin-top: 5px;
+}
+
+.soft_keys {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.5vh;
+    margin-bottom: 0.5vh;
+}
+
+.nav_wrap {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 0.5vh;
+}
+
+.nav_wrap .key {
+    width: 100%;
+}
+
+.nav_wrap .up_btn {
+    border-radius: 12px 12px 0 0;
+}
+
+.nav_wrap .down_btn {
+    border-radius: 0 0 12px 12px;
+}
+
+.call_btn {
+    background: linear-gradient(to right, #1a4d1a, #0d3d0d);
+    color: #2ecc71;
+}
+
+.hang_btn {
+    background: linear-gradient(to right, #661111, #4d0000);
+    color: #e74c3c;
+}
