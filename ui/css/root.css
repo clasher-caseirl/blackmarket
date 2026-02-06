@@ -1,0 +1,25 @@
+/* Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Kanit&display=swap");
+
+@font-face {
+    font-family: "Nokia";
+    src: url("../fonts/nokiafc22.ttf");
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Root palette */
+:root {
+    --bg: #141414;
+    --bg2: #313030;
+    --bg3: rgba(0, 0, 0, 0.5);
+    --bg4: rgba(0, 0, 0, 0.15);
+    
+    --text_primary: #1f1e1e;
+    --text_secondary: #b4b4b4;
+    --screen_bg: #3C412C;
+    --shadow: inset 0px 1px 3px 0px rgba(0, 0, 0, 0.75), inset -1px -1px rgba(0, 0, 0, 0.75);
+    --gradient: linear-gradient(to right, #323030, #000000);
+
+    --header_font: "Kanit";
+}

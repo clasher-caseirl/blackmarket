@@ -1,6 +1,10 @@
 export class Phone {
     constructor(brand = "CELLTOWA") {
         this.brand = brand;
+        this.current_screen = 'home';
+        this.menu_selected = 0;
+        this.menu_items = [];
+        this.screen_text = '';     
         this.soft_keys = [
             { key: 'call', label: '<i class="fa-solid fa-phone"></i>', class: 'call_btn' },
             { key: 'hang', label: '<i class="fa-solid fa-phone-slash"></i>', class: 'hang_btn' },
@@ -23,18 +27,18 @@ export class Phone {
             { key: '0', label: '+' },
             { key: '#', label: '' },
         ];
-        this.ascii = `<pre>       
-──▄────▄▄▄▄▄▄▄────▄───
-─▀▀▄─▄█████████▄─▄▀▀──
-─────██─▀███▀─██──────
-───▄─▀████▀████▀─▄────
-─▀█────██▀█▀██────█▀──
-
-
-
-</pre>`;
-        this.current_screen = "boii_dev";
+        this.screen_renderers = {
+            home: () => this.render_home(),
+            text: () => this.render_text(),
+            menu: () => this.render_menu(),
+            confirm: () => this.render_confirm(),
+        };
+        this.key_handlers = {
+            menu: (k) => this.handle_keys(k),
+            confirm: (k) => this.handle_confirm(k),
+        };
         this.build();
+        this.attach_events();
     }
 
     build() {
@@ -65,9 +69,140 @@ export class Phone {
             <div class="screen">
                 ${this.build_signal_bars()}
                 ${this.build_battery_bars()}
-                <div class="screen_content" id="screen_content">${this.ascii}</div>
+                <div class="screen_content" id="screen_content">${this.render_screen()}</div>
             </div>
         `;
+    }
+
+    render_screen() {
+        const renderer = this.screen_renderers[this.current_screen];
+        return renderer ? renderer() : this.screen_renderers.home();
+    }
+
+    render_home() {
+        return `<div class="screen_wrapper"><pre>       
+──▄────▄▄▄▄▄▄▄────▄───
+─▀▀▄─▄█████████▄─▄▀▀──
+─────██─▀███▀─██──────
+───▄─▀████▀████▀─▄────
+─▀█────██▀█▀██────█▀──
+
+
+
+</pre></div>`;
+    }
+
+    render_text() {
+        return `<div class="screen_wrapper"><div class="text_display">${this.screen_text}</div></div>`;
+    }
+
+    render_menu() {
+        return `
+            <div class="screen_wrapper">
+                <div class="menu_title">SELECT</div>
+                <div class="menu_list">
+                    ${this.menu_items.map((item, idx) => `
+                        <div class="menu_item ${idx === this.menu_selected ? 'active' : ''}">
+                            <span class="menu_name" title="${item.name}">${item.name}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    render_confirm() {
+        const selected = this.menu_items[this.menu_selected];
+        return `
+            <div class="screen_wrapper">
+                <div class="menu_title">${selected.name}</div>
+                <div class="confirm_info">
+                    <div class="info_row">
+                        <span>Qty:</span>
+                        <span>${selected.quantity}</span>
+                    </div>
+                    <div class="info_row">
+                        <span>Price:</span>
+                        <span>$${selected.price}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    handle_keys(key) {
+        if (key === 'up') {
+            this.menu_selected = Math.max(0, this.menu_selected - 1);
+            this.scroll_to_selected();
+        } else if (key === 'down') {
+            this.menu_selected = Math.min(this.menu_items.length - 1, this.menu_selected + 1);
+            this.scroll_to_selected();
+        } else if (key === 'call') {
+            this.current_screen = 'confirm';
+            this.update_screen();
+        } else if (key === 'hang') {
+            this.set_screen('home');
+        }
+    }
+
+    handle_confirm(key) {
+        if (key === 'call') {
+            const selected = this.menu_items[this.menu_selected];
+            $.post(`https://${GetParentResourceName()}/nui:confirm_order`, JSON.stringify({ item_id: selected.id }));
+        } else if (key === 'hang') {
+            this.current_screen = 'menu';
+            this.update_screen();
+        }
+    }
+
+    scroll_to_selected() {
+        this.update_screen();
+        setTimeout(() => {
+            const selected = document.querySelector('.menu_item.active');
+            if (selected) {
+                selected.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }, 0);
+    }
+
+    set_screen(name) {
+        this.current_screen = name;
+        this.update_screen();
+    }
+
+    set_text(text) {
+        this.screen_text = '';
+        this.current_screen = 'text';
+        this.update_screen();
+        this.typewriter_text(text);
+    }
+
+    typewriter_text(text, speed = 30) {
+        let index = 0;
+        const type = () => {
+            if (index < text.length) {
+                this.screen_text += text[index];
+                index++;
+                this.update_screen();
+                setTimeout(type, speed);
+            }
+        };
+        type();
+    }
+
+    set_menu(items) {
+        this.menu_items = items;
+        this.menu_selected = 0;
+        this.current_screen = 'menu';
+        this.update_screen();
+    }
+
+    get_selected() {
+        return this.menu_items[this.menu_selected];
+    }
+
+    update_screen() {
+        $('#screen_content').html(this.render_screen());
     }
 
     build_signal_bars() {
@@ -127,5 +262,19 @@ export class Phone {
                 <div class="btm_speaker"></div>
             </div>
         `;
+    }
+
+    attach_events() {
+        $(document).on('click', '.key', (e) => {
+            const key = $(e.currentTarget).data('key');
+            const handler = this.key_handlers[this.current_screen];
+            if (handler) handler(key);
+        });
+        $(document).on('keyup', (e) => e.key === 'Escape' && this.close());
+    }
+
+    close() {
+        $("#app").empty();
+        $.post(`https://${GetParentResourceName()}/nui:remove_focus`);
     }
 }

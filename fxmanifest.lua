@@ -32,24 +32,14 @@ shared_scripts {
     "locales/*.lua",
     "lib/*.lua",
     "init.lua",
-    "src/shared/*.lua"
-}
-client_scripts {
-    "src/client/*.lua"
-}
-server_scripts {
-    "src/server/*.lua"
-}
+    "src/shared/*.lua",
 
---- Custom
-server_scripts {
-    "custom/configs/*.lua"
-}
-shared_scripts {
+    "custom/configs/*.lua",
     "custom/hooks.lua"
 }
-
---- Escrow
-escrow_ignore {
-    "**"
+client_scripts {
+    "src/client/**/*.lua"
+}
+server_scripts {
+    "src/server/**/*.lua"
 }
