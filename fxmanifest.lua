@@ -29,6 +29,7 @@ server_script "@oxmysql/lib/MySQL.lua"
 
 --- Core
 shared_scripts {
+    "custom/settings.lua",
     "locales/*.lua",
     "lib/*.lua",
     "init.lua",

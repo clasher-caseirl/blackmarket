@@ -4,7 +4,9 @@ export class Phone {
         this.current_screen = 'home';
         this.menu_selected = 0;
         this.menu_items = [];
-        this.screen_text = '';     
+        this.is_message = false;
+        this.is_sending = false;
+        this.screen_text = '';  
         this.soft_keys = [
             { key: 'call', label: '<i class="fa-solid fa-phone"></i>', class: 'call_btn' },
             { key: 'hang', label: '<i class="fa-solid fa-phone-slash"></i>', class: 'hang_btn' },
@@ -93,7 +95,18 @@ export class Phone {
     }
 
     render_text() {
-        return `<div class="screen_wrapper"><div class="text_display">${this.screen_text}</div></div>`;
+        if (!this.is_message) { return `<div class="screen_wrapper"><div class="text_display">${this.screen_text}</div></div>`; }
+        return this.render_message()
+    }
+
+    render_message() {
+        return `
+            <div class="screen_wrapper">
+                <div class="text_header"><i class="fa-solid fa-envelope"></i> MESSAGES</div>
+                <div class="text_display">${this.screen_text}</div>
+                <div class="text_footer">${this.is_sending ? "SEND" : "REPLY"}</div>
+            </div>
+        `;
     }
 
     render_menu() {
@@ -170,8 +183,10 @@ export class Phone {
         this.update_screen();
     }
 
-    set_text(text) {
+    set_text(text, is_message, send) {
         this.screen_text = '';
+        this.is_message = is_message || false;
+        this.is_sending = send || false;
         this.current_screen = 'text';
         this.update_screen();
         this.typewriter_text(text);
@@ -274,7 +289,15 @@ export class Phone {
     }
 
     close() {
+        this.current_screen = 'home';
+        this.menu_selected = 0;
+        this.menu_items = [];
+        this.screen_text = '';
+        this.is_message = false;
+        this.is_sending = false;
+        $(document).off('click', '.key');
+        $(document).off('keyup');
         $("#app").empty();
-        $.post(`https://${GetParentResourceName()}/nui:remove_focus`);
+        $.post(`https://${GetParentResourceName()}/nui:close_burner`);
     }
 }

@@ -19,7 +19,7 @@ handlers.build = (data) => {
  * Set phone text with typewriter effect
  */
 handlers.set_text = (data) => {
-    phone.set_text(data.text);
+    phone.set_text(data.text, data.is_message || false, data.send || false);
 };
 
 /**
@@ -58,14 +58,16 @@ window.addEventListener("message", (event) => {
     handler(event.data);
 });
 
+
 /**
- * Test commands - uncomment to test UI in browser
+ * Test stuff - uncomment to test UI in browser
  */
 /*
-handlers.init_phone();
+handlers.build({ brand: "CELLTOWA" });
+handlers.set_text({ text: "Yo got supply in?", is_message: true, send: true });
 
 window.test_text = () => {
-    phone.set_text("Yo got supply in?\nYEAH MAN");
+    phone.set_text("Yo got supply in?");
 };
 
 window.test_menu = () => {
@@ -79,7 +81,7 @@ window.test_menu = () => {
 };
 
 window.test_unavailable = () => {
-    phone.set_text("NAH MAN\nCOPS EVERYWHERE");
+    phone.set_text("NAH MAN COPS EVERYWHERE");
 };
 
 window.test_home = () => {

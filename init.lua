@@ -108,7 +108,7 @@ local settings = safe_require("custom.settings")
 
 core.settings = {
     language = settings.language or "en",
-    debug_mode = settings.debug or true,
+    debug_mode = settings.debug or false,
     startup_message_enabled = settings.startup_message or false
 }
 
@@ -146,14 +146,13 @@ end
 
 if core.is_server and core.settings.startup_message_enabled then
 
-    SetTimeout(350, function()
+    SetTimeout(150, function()
         print("^2")
         print("^2 ------------------------------------------------------------")
         print("^2 ^7Name:^2 " .. core.resource_metadata.name)
         print("^2 ^7Description:^2 " .. core.resource_metadata.description)
         print("^2 ^7Author:^2 " .. core.resource_metadata.author)
         print("^2 ^7Version:^2 " .. core.resource_metadata.version)
-        print("^2 ^7Environment:^2 Server")
         print("^2 ^7Language:^2 " .. core.settings.language)
         print("^2 ------------------------------------------------------------")
         print("^2 ^7Settings:")
@@ -169,7 +168,7 @@ end
 
 --- @section Namespace Protection
 
-SetTimeout(150, function()
+SetTimeout(250, function()
     setmetatable(core, {
         __newindex = function(_, key)
             error(translate("init.ns_blocked", key), 2)

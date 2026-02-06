@@ -37,6 +37,7 @@ body {
     align-items: center;
     padding: 1vh;
     border: 3px solid var(--bg3);
+    user-select: none;
 }
 
 .phone_header {
@@ -258,15 +259,13 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 2vh;
+    justify-content: space-around;
 }
 
 .menu_list {
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-
     max-height: 10vh;
     width: 100%;
 }
@@ -306,4 +305,10 @@ body {
     display: flex;
     justify-content: space-between;
     padding: 0.5vh;
+}
+
+.text_header {
+    display: flex;
+    align-items: center;
+    gap: 0.5vh;
 }

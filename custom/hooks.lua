@@ -166,11 +166,7 @@ if core.is_server then
         if not source or not opts then return end
 
         --- @example QBCore
-        -- QBCore uses TriggerClientEvent for notifications
-        -- TriggerClientEvent('QBCore:Notify', source, opts.message, opts.type or 'primary', opts.duration or 4000)
-        
-        -- Or use the built-in system
-        exports.pluck:notify(source, opts)
+        TriggerClientEvent('QBCore:Notify', source, opts.message, opts.type or 'primary', opts.duration or 4000)
     end
 
 end
@@ -178,6 +174,8 @@ end
 --- @section Client Functions
 
 if not core.is_server then
+
+    local QBCore = exports['qb-core']:GetCoreObject()
 
     --- Handles displaying notifications on the client
     --- Modify this function to integrate with your framework's notification system
@@ -193,11 +191,7 @@ if not core.is_server then
         if not opts then return end
 
         --- @example QBCore
-        -- local QBCore = exports['qb-core']:GetCoreObject()
-        -- QBCore.Functions.Notify(opts.message, opts.type or 'primary', opts.duration or 4000)
-        
-        -- Or use the built-in system
-        exports.pluck:notify(opts)
+        QBCore.Functions.Notify(opts.message, opts.type or 'primary', opts.duration or 4000)
     end
 
 end
