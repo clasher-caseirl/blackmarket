@@ -3,7 +3,7 @@
 
 --- @section Modules
 
-local item_defs = require("custom.items")
+local item_defs = require("custom.configs.items")
 local hooks = require("custom.hooks")
 
 --- @section Functions
