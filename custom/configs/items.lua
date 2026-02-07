@@ -37,6 +37,11 @@ return {
             rep_increase = 5, -- 5% increase per reputation level
             max_increase = 50, -- Maximum 50% increase at high reputation
             disable_scaling = false, -- Disables reputation scaling for item quantity
+        },
+
+        delivery = { -- Delivery method settings
+            method = "find_object", -- Method to use: "find_object" | "search_vehicle" | "deliver_vehicle" |  
+            models = { "prop_ld_case_01", "hei_prop_hei_security_case" }, -- Models to use for method: "find_object" us any object models | "_vehicle" methods use any vehicle models
         }
     },
 
@@ -47,15 +52,14 @@ return {
         price = { base = 100 } -- Overriding base price
     },
 
-    advanced_lockpick = {
-        label = "Adv Lockpick",
-        price = { base = 250 }
-    },
-
     nitrous = {
         label = "NOS",
         price = { base = 350 },
-        quantity = { disable_scaling = true } -- Override quantity
+        quantity = { disable_scaling = true }, -- Override quantity
+        delivery = {
+            method = "search_vehicle",
+            models = { "issi4" }
+        }
     },
 
     weapon_crowbar = {

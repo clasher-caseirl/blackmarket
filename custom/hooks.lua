@@ -34,19 +34,6 @@ if core.is_server then
         return player.PlayerData.citizenid
     end
 
-    --- Is used to get the players character name.
-    --- It is mainly for displaying on UI so is not really important.
-    --- @param source number: Players server id
-    --- @return name: Players character name
-    function hooks.get_player_name(source)
-        
-        --- @example QBCore
-        local player = QBCore.Functions.GetPlayer(source)
-        if not player then log("error", "Player missing.") return end
-        
-        return player.PlayerData.charinfo.firstname .. " " .. player.PlayerData.charinfo.lastname
-    end
-
     --- Check if player can afford a payment
     --- @param source number: Player source
     --- @param payment_method string: Payment method ID (cash, bank, etc)

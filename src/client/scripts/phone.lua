@@ -12,10 +12,6 @@ local requests = require("lib.requests")
 local is_open = false
 local phone_prop = nil
 
---- @section Functions
-
-
-
 --- @section NUI Callbacks
 
 --- Removes NUI focus
@@ -61,9 +57,6 @@ RegisterNetEvent("blackmarket:cl:open_burner", function()
             TriggerEvent("blackmarket:cl:set_text", translate("burner.messages.contact"), true, true)
         end },
         { delay = 2200, fn = function()
-            TriggerEvent("blackmarket:cl:set_text", translate("burner.messages.sending"))
-        end },
-        { delay = 1500, fn = function()
             TriggerEvent("blackmarket:cl:set_text", translate("burner.messages.sent"))
         end },
         { delay = 1500, fn = function()
@@ -83,7 +76,7 @@ end)
 
 --- Displays menu items on phone screen
 --- @param items table: Array of item objects with id, name, price, quantity
-RegisterNetEvent("blackmarket:cl:set_menu", function(items)
+RegisterNetEvent("blackmarket:cl:set_menu", function(items, should_focus)
     if not is_open then return end
     SendNUIMessage({ func = "set_menu", items = items })
 end)
@@ -96,7 +89,8 @@ RegisterNetEvent("blackmarket:cl:set_screen", function(text, send)
     SendNUIMessage({ func = "set_screen", screen = "home" })
 end)
 
---- Focuses ui so phone menu can be used
-RegisterNetEvent("blackmarket:cl:focus_nui", function()
-    SetNuiFocus(true, true)
+--- Toggles nui focus
+RegisterNetEvent("blackmarket:cl:toggle_nui_focus", function()
+    local is_nui_focused = IsNuiFocused()
+    SetNuiFocus(not is_nui_focused, not is_nui_focused)
 end)

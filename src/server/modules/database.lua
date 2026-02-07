@@ -9,7 +9,7 @@ function db.init()
         CREATE TABLE IF NOT EXISTS `blackmarket_reputation` (
             `id` BIGINT NOT NULL AUTO_INCREMENT,
             `identifier` VARCHAR(255) NOT NULL,
-            `reputation` INT NOT NULL DEFAULT 0,
+            `reputation` INT NOT NULL DEFAULT 1,
             `items_bought` INT NOT NULL DEFAULT 0,
             `total_paid` INT NOT NULL DEFAULT 0,
             `last_update` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -52,6 +52,20 @@ end
 function db.create_reputation(identifier)
     local query = "INSERT INTO blackmarket_reputation (identifier) VALUES (?)"
     return MySQL.insert.await(query, {identifier})
+end
+
+--- Get or create reputation record
+--- @param identifier string: Players unique char id
+--- @return table: Player reputation record
+function db.get_or_create(identifier)
+    local rep_data = db.get_reputation(identifier)
+    if rep_data and #rep_data > 0 then
+        return rep_data[1]
+    end
+    
+    db.create_reputation(identifier)
+    rep_data = db.get_reputation(identifier)
+    return rep_data[1]
 end
 
 return db

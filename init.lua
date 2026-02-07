@@ -43,7 +43,7 @@ end
 --- Logs a stylized print message
 --- @param level string: Debug level (debug, info, success, warn, error, critical, dev)
 --- @param message string: Message to print
-function log(level, message)
+local function log(level, message)
     if not core.settings.debug_mode then return end
 
     local colors = { reset = "^7", debug = "^6", info = "^5", success = "^2", warn = "^3", error = "^8", critical = "^1", dev = "^9" }
@@ -61,7 +61,7 @@ _G.log = log
 --- @param key string: Locale key string
 --- @param ... any: Arguments for string.format
 --- @return string: Translated string
-function translate(key, ...)
+local function translate(key, ...)
     local str = core.locale[key]
     if not str and type(key) == "string" then
         local v = core.locale
@@ -82,7 +82,7 @@ _G.translate = translate
 
 --- Safe require function for loading internal modules
 --- @param key string: Path key e.g. `src.server.modules.database`
-function safe_require(key)
+local function safe_require(key)
     if not key or type(key) ~= "string" then return nil end
     local rel_path = key:gsub("%.", "/")
     if not rel_path:match("%.lua$") then rel_path = rel_path .. ".lua" end
@@ -104,12 +104,14 @@ _G.require = safe_require
 
 --- @section Settings
 
-local settings = safe_require("custom.settings")
+local settings = require("custom.settings")
 
 core.settings = {
     language = settings.language or "en",
     debug_mode = settings.debug or false,
-    startup_message_enabled = settings.startup_message or false
+    startup_message_enabled = settings.startup_message or false,
+    use_target = settings.use_target or false,
+    phone_prop = settings.phone_prop or "prop_v_m_phone_o1s"
 }
 
 --- @section Locales

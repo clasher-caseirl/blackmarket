@@ -36,6 +36,8 @@ export class Phone {
             confirm: () => this.render_confirm(),
         };
         this.key_handlers = {
+            home: (k) => this.handle_home(k),
+            text: (k) => this.handle_home(k),
             menu: (k) => this.handle_keys(k),
             confirm: (k) => this.handle_confirm(k),
         };
@@ -165,6 +167,12 @@ export class Phone {
         } else if (key === 'hang') {
             this.current_screen = 'menu';
             this.update_screen();
+        }
+    }
+
+    handle_home(key) {
+        if (key === 'hang') {
+            this.close();
         }
     }
 
