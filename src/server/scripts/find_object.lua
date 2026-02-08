@@ -4,6 +4,8 @@
 --- @section Modules
 
 local hooks = require("custom.hooks")
+local db = require("src.server.modules.database")
+local item_defs = require("custom.configs.items")
 
 --- @section Variables
 
@@ -29,17 +31,6 @@ local function validate_drop(drop_id)
     local drop = active_drops[drop_id]
     if not drop then log("warn", translate("find_object.drop_not_found", drop_id)) return nil end
     return drop
-end
-
---- Validate delivery exists and belongs to player
---- @param delivery_id string: Delivery identifier
---- @param source number: Player server ID
---- @return table|nil: Delivery data or nil if invalid
-local function validate_delivery_ownership(delivery_id, source)
-    local delivery = core.get_delivery(delivery_id)
-    if not delivery then log("warn", translate("find_object.delivery_not_found", delivery_id)) return nil end
-    if delivery.source ~= source then log("warn", translate("find_object.wrong_owner", source, delivery_id, delivery.source)) return nil end
-    return delivery
 end
 
 --- Validate player proximity to drop location
@@ -81,14 +72,13 @@ function core.start_find_object(source, delivery_id, location, spawn, model)
 end
 
 --- Complete find object delivery
---- Validates delivery ownership and gives player their items
 --- @param source number: Player server ID
 --- @param delivery_id string: Delivery identifier
 --- @return boolean: True if successful, false otherwise
 function core.complete_find_object(source, delivery_id)
-    if not validate_player(source) then log("error", translate("find_object.complete_failed_player", delivery_id)) return false end   
-    local delivery = validate_delivery_ownership(delivery_id, source)
-    if not delivery then log("error", translate("find_object.complete_failed_ownership", delivery_id, source)) return false end
+    if not validate_player(source) then log("error", translate("find_object.complete_failed_player", delivery_id)) return false end
+    local delivery = core.get_delivery(delivery_id)
+    if not delivery then log("error", translate("find_object.delivery_not_found", delivery_id)) return false end
 
     if not hooks.has_inventory_space(source, delivery.item_id, delivery.quantity) then
         log("warn", translate("find_object.no_inventory_space", source, delivery.item_id))
@@ -111,9 +101,26 @@ function core.complete_find_object(source, delivery_id)
         })
         return false
     end
+
+    local identifier = hooks.get_player_identifier(source)
+    if identifier then
+        local item_config = item_defs[delivery.item_id] or {}
+        local rep_config = item_config.reputation or item_defs._defaults.reputation
+        local xp_range = rep_config.xp_on_success
+        local xp_reward = math.random(xp_range.min, xp_range.max)
+        
+        local rep_data = db.get_or_create(identifier)
+        if rep_data then
+            local new_rep = rep_data.reputation + xp_reward
+            local new_items = rep_data.items_bought + delivery.quantity
+            local new_total = rep_data.total_paid + delivery.price
+            
+            db.update_reputation(identifier, new_rep, new_items, new_total)
+            log("debug", ("Updated reputation for %s: +%d xp (now %d)"):format(identifier, xp_reward, new_rep))
+        end
+    end
     
     log("success", translate("deliveries.completed", delivery.identifier, delivery.quantity, delivery.item_id))
-    
     hooks.send_notification(source, {
         type = "success",
         header = translate("find_object.notifications.header"),
@@ -143,23 +150,11 @@ end)
 --- @param drop_id string: Drop identifier
 RegisterServerEvent("blackmarket:sv:validate_pickup", function(drop_id)
     local _src = source
-    if not validate_player(_src) then log("warn", translate("find_object.validate_failed_player", _src, drop_id)) return  end   
+    if not validate_player(_src) then log("warn", translate("find_object.validate_failed_player", _src, drop_id)) return end
     local drop = validate_drop(drop_id)
     if not drop then log("warn", translate("find_object.validate_failed_drop", _src, drop_id)) return end
-    
-    local delivery = validate_delivery_ownership(drop_id, _src)
-    if not delivery then 
-        log("warn", translate("find_object.validate_failed_ownership", _src, drop_id))
-        hooks.send_notification(_src, {
-            type = "error",
-            header = translate("find_object.notifications.header"),
-            message = translate("find_object.notifications.not_your_drop"),
-            duration = 4000
-        })
-        return 
-    end
-    
     local drop_coords = vector3(drop.coords.x, drop.coords.y, drop.coords.z)
+
     if not validate_proximity(_src, drop_coords, 5.0) then 
         log("warn", translate("find_object.validate_failed_proximity", _src, drop_id))
         hooks.send_notification(_src, {
@@ -175,14 +170,32 @@ RegisterServerEvent("blackmarket:sv:validate_pickup", function(drop_id)
     log("debug", translate("find_object.pickup_validated", _src, drop_id))
 end)
 
---- Pickup animation completed - remove drop from world for all clients
---- Does not give items yet - player must store in vehicle first
+--- Player stored drop in vehicle
+--- @param drop_id string: Drop identifier
+RegisterServerEvent("blackmarket:sv:pickup_drop", function(drop_id)
+    local _src = source
+    if not validate_player(_src) then log("warn", translate("find_object.store_failed_player", _src, drop_id)) return end
+    if not drop_id or type(drop_id) ~= "string" then log("error", translate("find_object.store_failed_invalid_id", _src)) return end
+    
+    local delivery = core.get_delivery(drop_id)
+    if delivery and delivery.source ~= _src then
+        hooks.send_notification(delivery.source, {
+            type = "error",
+            header = translate("find_object.notifications.header"),
+            message = "Someone stole your delivery!",
+            duration = 6000
+        })
+        log("warn", translate("find_object.wrong_owner", _src, drop_id, delivery.source))
+    end
+
+    core.complete_find_object(_src, drop_id)
+end)
+
+--- Pickup animation completed
 --- @param drop_id string: Drop identifier
 RegisterServerEvent("blackmarket:sv:pickup_complete", function(drop_id)
     local _src = source
     if not validate_player(_src) then log("warn", translate("find_object.pickup_complete_failed_player", _src, drop_id)) return end
-    local delivery = validate_delivery_ownership(drop_id, _src)
-    if not delivery then log("warn", translate("find_object.pickup_complete_failed_ownership", _src, drop_id)) return end
     local drop = validate_drop(drop_id)
     if not drop then log("warn", translate("find_object.pickup_complete_failed_drop", _src, drop_id)) return end
 
@@ -192,17 +205,6 @@ RegisterServerEvent("blackmarket:sv:pickup_complete", function(drop_id)
     log("debug", translate("find_object.pickup_completed", _src, drop_id))
 end)
 
---- Player stored drop in vehicle - complete delivery and give items
---- @param drop_id string: Drop identifier
-RegisterServerEvent("blackmarket:sv:pickup_drop", function(drop_id)
-    local _src = source
-    if not validate_player(_src) then log("warn", translate("find_object.store_failed_player", _src, drop_id)) return end
-    if not drop_id or type(drop_id) ~= "string" then log("error", translate("find_object.store_failed_invalid_id", _src)) return end
-    local delivery = validate_delivery_ownership(drop_id, _src)
-    if not delivery then log("warn", translate("find_object.store_failed_ownership", _src, drop_id)) return end
-
-    core.complete_find_object(_src, drop_id)
-end)
 
 --- Cleanup drops on player disconnect
 AddEventHandler('playerDropped', function()

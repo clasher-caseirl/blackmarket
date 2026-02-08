@@ -99,6 +99,48 @@ return {
             pickup_package = "Press ~INPUT_CONTEXT~ to pick up package",
             open_package = "Press ~INPUT_CONTEXT~ to open package"
         }
+    },
+
+    search_vehicle = {
+        invalid_source = "Invalid player source",
+        player_not_found = "Player not found: %s",
+        invalid_vehicle_id = "Invalid vehicle ID provided",
+        vehicle_not_found = "Vehicle not found: %s",
+        delivery_not_found = "Delivery not found: %s",
+        invalid_delivery_id = "Invalid delivery ID",
+        invalid_location = "Invalid location data",
+        invalid_spawn = "Invalid spawn coordinates",
+        invalid_model = "Invalid model provided",
+        wrong_owner = "Player %d attempted to complete delivery %s owned by player %d",
+        start_failed_player = "Failed to start delivery %s: invalid player",
+        spawn_failed = "Failed to spawn vehicle for delivery %s: model %s",
+        complete_failed_player = "Failed to complete delivery %s: invalid player",
+        complete_failed_ownership = "Failed to complete delivery %s for player %d: ownership validation failed",
+        no_inventory_space = "Player %s has no space for %s",
+        add_item_failed = "Failed to add item for player %s: %s",
+        vehicle_created = "Vehicle created: %s for player %d",
+        vehicle_cleaned = "Vehicle cleaned up: %s (player %d disconnected)",
+        vehicle_unlocked = "Vehicle unlocked: player %d, vehicle %s",
+        vehicle_unlocked_client = "Vehicle unlocked on client: %s",
+        vehicle_deleted_delay = "Vehicle deleted after delay: %s",
+        lockpick_failed_player = "Lockpick failed for player %d, vehicle %s: invalid player",
+        lockpick_failed_vehicle = "Lockpick failed for player %d, vehicle %s: vehicle not found",
+        lockpick_failed_ownership = "Lockpick failed for player %d, vehicle %s: ownership check failed",
+        lockpick_started = "Lockpick started: player %d, vehicle %s",
+        no_lockpick = "Player %d has no lockpick",
+        search_locked = "Player %d attempted to search locked vehicle %s",
+        location_set = "Delivery location set: %s - Method: %s",
+        vehicle_added = "Vehicle added: %s",
+        lockpick_vehicle = "Press ~INPUT_CONTEXT~ to lockpick vehicle",
+        search_vehicle = "Press ~INPUT_CONTEXT~ to search vehicle",
+        notifications = {
+            header = "BLACKMARKET",
+            items_received = "Received %dx %s",
+            unlocked = "Vehicle unlocked",
+            not_your_vehicle = "This isn't your vehicle",
+            need_lockpick = "You need a lockpick",
+            someone_stole = "Someone stole your delivery!"
+        }
     }
 
 }

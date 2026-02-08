@@ -36,6 +36,11 @@ RegisterNUICallback("nui:confirm_order", function(data)
     TriggerServerEvent("blackmarket:sv:confirm_order", data.item_id)
 end)
 
+--- Removes NUI focus
+RegisterNUICallback("nui:remove_focus", function()
+    SetNuiFocus(false, false)
+end)
+
 --- @section Events
 
 --- Opens burner phone

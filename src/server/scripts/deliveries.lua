@@ -70,7 +70,6 @@ function core.start_delivery(source, data)
     
     local random_spawn = location.spawns[math.random(1, #location.spawns)]
     local random_model = data.delivery_models[math.random(1, #data.delivery_models)]
-    
     local delivery_id = ("%s_%d"):format(location.label, GetGameTimer())
     
     active_deliveries[delivery_id] = {

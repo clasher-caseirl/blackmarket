@@ -15,8 +15,9 @@ if core.is_server then
     --- @param item_id string: The string ID for item
     --- @param func function: The custom function attached to item
     function hooks.register_usable_item(item_id, func)
+        if not item_id or not func then return end
 
-        
+        --- @example QBCore
         QBCore.Functions.CreateUseableItem(item_id, function(source)
             func(source)
         end)
@@ -56,6 +57,22 @@ if core.is_server then
         end
 
         return false
+    end
+
+    --- Check if player has item
+    --- @param source number: Player source
+    --- @param item_id string: Item ID
+    --- @param quantity number: Quantity to check
+    --- @return boolean: Has item
+    function hooks.has_item(source, item_id, quantity)
+        if not source or not item_id or not quantity then return end
+
+        --- @example QBCore
+        local player = QBCore.Functions.GetPlayer(source)
+        if not player then log("error", "Player missing.") return false end
+
+        local item = player.Functions.GetItemByName(item_id)
+        return item and item.amount >= quantity
     end
 
     --- Check if player has inventory space
@@ -179,6 +196,16 @@ if not core.is_server then
 
         --- @example QBCore
         QBCore.Functions.Notify(opts.message, opts.type or 'primary', opts.duration or 4000)
+    end
+
+    --- Start lockpick minigame
+    --- @param callback function: Callback with result
+    function hooks.lockpick_minigame(callback)
+        if not callback then return { success = false } end 
+
+        --- @example QBCore
+        local success = exports['qb-minigames']:Lockpick(3)
+        callback({ success = success })
     end
 
 end

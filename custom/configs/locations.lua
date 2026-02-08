@@ -16,10 +16,21 @@ return {
             spawns = { -- Spawn locations
                 vector4(-2875.89, 39.03, 12.27, 68.69), -- Spawn coordinates
                 vector4(-2878.21, 39.95, 12.27, 67.27)
-                -- Add as many spawn locations as you want
+                -- Add as many spawn locations as you want **dont forget the comma**
             }
         }
         -- Add as many locations as you like just copy the above and edit **dont forget the comma**
+    },
+
+    search_vehicle = { -- "search_vehicle" method
+        {
+            label = "Pacific Bluffs",
+            zone = { coords = vector3(-3026.92, 110.06, 11.62), radius = 100.0, colour = 1 },
+            spawns = {
+                vector4(-3032.24, 136.01, 11.61, 294.57),
+                vector4(-3040.12, 152.46, 11.61, 296.01)
+            }
+        }
     }
 
 }

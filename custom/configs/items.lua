@@ -1,5 +1,7 @@
 --- @module custom.config.items
---- @description Holds all config defs for items the vendor can sell; you should customise these, dont be boring, change it up :) 
+--- @description Holds all config defs for items the vendor can sell
+--- By default this covers qbcore items, if you are using this on another framework make sure you change them
+--- Changing values is encouraged and add more items! Have fun with it, don't be boring
 
 --- @section Module
 
@@ -40,8 +42,8 @@ return {
         },
 
         delivery = { -- Delivery method settings
-            method = "find_object", -- Method to use: "find_object" | "search_vehicle" | "deliver_vehicle" |  
-            models = { "prop_ld_case_01", "hei_prop_hei_security_case" }, -- Models to use for method: "find_object" us any object models | "_vehicle" methods use any vehicle models
+            method = "find_object", -- Method to use: "find_object" | "search_vehicle"
+            models = { "prop_ld_case_01", "hei_prop_hei_security_case" }, -- Models to use for method: "find_object" us any object models | "search_vehicle" use any vehicle models
         }
     },
 
@@ -56,9 +58,9 @@ return {
         label = "NOS",
         price = { base = 350 },
         quantity = { disable_scaling = true }, -- Override quantity
-        delivery = {
-            method = "search_vehicle",
-            models = { "issi4" }
+        delivery = { -- Override delivery
+            method = "search_vehicle", -- Use search vehicle method instead
+            models = { "comet3" } -- Vehicle models that can spawn to search
         }
     },
 
@@ -91,6 +93,6 @@ return {
         label = "Coke Brick",
         price = { base = 750 },
         reputation = { required_level = 4 }
-    },
+    }
 
 }
