@@ -7,11 +7,28 @@ local animations = require("lib.animations")
 local requests = require("lib.requests")
 
 local settings = require("custom.settings")
+local hooks = require("custom.hooks")
 
 --- @section Variables
 
 local is_open = false
 local phone_prop = nil
+
+--- @section Functions 
+
+--- Closes burner phone
+local function close_phone(player_ped)
+    is_open = false
+    ClearPedTasks(player_ped)
+    SetNuiFocus(false, false)
+    SendNUIMessage({ func = "close_phone" })
+    if phone_prop and DoesEntityExist(phone_prop) then
+        DeleteObject(phone_prop)
+        phone_prop = nil
+        log("debug", "nui:close_burner - Phone prop deleted.")
+    end
+    log("debug", "nui:close_burner - Focus cleared.")
+end
 
 --- @section NUI Callbacks
 
@@ -99,4 +116,29 @@ end)
 RegisterNetEvent("blackmarket:cl:toggle_nui_focus", function()
     local is_nui_focused = IsNuiFocused()
     SetNuiFocus(not is_nui_focused, not is_nui_focused)
+end)
+
+--- Triggered by server with zone coords
+--- @param coords vector3: The zone coordinates to check scumminess for
+RegisterNetEvent("blackmarket:cl:get_zone_scumminess", function(coords)
+    local zone = GetZoneAtCoords(coords.x, coords.y, coords.z)
+    local scumminess = GetZoneScumminess(zone)
+    print("scum level: ", scumminess)
+    TriggerServerEvent("blackmarket:sv:check_police_alert", scumminess, coords)
+end)
+
+--- Triggers hooks to display police alerts to correct players
+--- This is handled server side, make sure to setup hooks correctly for your framework.
+--- @param coords vector3: Coordinates where the alert originated
+--- @param label string: Alert message to display to police
+RegisterNetEvent("blackmarket:cl:police_alert", function(coords, label)
+    hooks.display_police_alert({ coords = coords, label = label })
+end)
+
+--- Closes phone 
+--- Used if anything fails serverside mainly
+RegisterNetEvent("blackmarket:cl:close_phone", function()
+    if not is_open then return end
+    local player_ped = PlayerPedId()
+    close_phone(player_ped)
 end)

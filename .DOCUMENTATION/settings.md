@@ -1,3 +1,9 @@
+# Settings Configuration
+
+All core settings are in `custom/settings.lua`. 
+All the actual fun stuff (items, locations, prices, rep levels, police alert chances) lives in `custom/configs/`.
+
+```lua
 --- @module custom.settings
 --- @description Handles core settings
 
@@ -9,7 +15,7 @@ return {
     menu_order_cooldown = 600, -- Cooldown time for placing new orders in seconds 600 = 10min, 1200 = 20min etc
     police_jobs = { "police" }, -- Table of police jobs to send alerts too
     on_duty_only_alerts = false, -- If alerts should only be sent to on duty players
-    required_police = 0, -- Amount of police officers required online to do a dead drop
+    required_police = 2, -- Amount of police officers required online to do a dead drop
     on_duty_only_required = false, -- If police officers have to be on duty to be counted
     rear_engine_vehicles = { -- List of rear engine vehicles
         adder = true,
@@ -53,3 +59,4 @@ return {
         zentorno = true
     }
 }
+```

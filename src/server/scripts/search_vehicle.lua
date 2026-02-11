@@ -238,7 +238,7 @@ end)
 --- @section Clean Up
 
 --- Cleanup all vehicles on resource stop
-AddEventHandler('onResourceStop', function(res)
+AddEventHandler("onResourceStop", function(res)
     if GetCurrentResourceName() == res then
         for vehicle_id, vehicle_data in pairs(active_vehicles) do
             if vehicle_data.entity and DoesEntityExist(vehicle_data.entity) then

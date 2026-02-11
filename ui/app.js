@@ -62,7 +62,7 @@ window.addEventListener("message", (event) => {
 /**
  * Test stuff - uncomment to test UI in browser
  */
-
+/*
 handlers.build({ brand: "CELLTOWA" });
 handlers.set_text({ text: "Yo got supply in?", is_message: true, send: true });
 
@@ -89,3 +89,4 @@ window.test_unavailable = () => {
 window.test_home = () => {
     phone.set_screen('home');
 };
+*/

@@ -4,6 +4,9 @@
 --- @section Modules
 
 local location_defs = require("custom.configs.locations")
+local scum_defs = require("custom.configs.scumminess")
+
+local hooks = require("custom.hooks")
 
 --- @section Variables
 
@@ -84,7 +87,9 @@ function core.start_delivery(source, data)
     }
     
     log("debug", translate("deliveries.started", source, data.item_id, location.label))
-    
+
+    TriggerClientEvent("blackmarket:cl:get_zone_scumminess", source, location.zone.coords)
+ 
     handler(source, delivery_id, location, random_spawn, random_model)
 end
 
@@ -100,6 +105,36 @@ end
 function core.remove_delivery(delivery_id)
     active_deliveries[delivery_id] = nil
 end
+
+--- @section Events
+
+--- Triggered by client with scumminess level
+--- @param scumminess number: Zone scumminess level from client
+--- @param coords vector3: Zone coordinates for alert location
+RegisterServerEvent('blackmarket:sv:check_police_alert', function(scumminess, coords)
+    local _src = source
+    if not scumminess or not coords then log("warn", translate("police_alert.invalid_params", _src)) return end
+
+    local has_active_delivery = false
+    for delivery_id, delivery in pairs(active_deliveries) do
+        if delivery.source == _src and delivery.location.zone.coords == coords then
+            has_active_delivery = true
+            break
+        end
+    end
+    
+    if not has_active_delivery then log("warn", translate("police_alert.no_active_delivery", _src)) return end
+    
+    local tier_config = scum_defs[scumminess]
+    log("debug", translate("police_alert.zone_check", _src, scumminess))
+    
+    if tier_config and math.random(1, 100) <= tier_config.alert_police then
+        log("info", translate("police_alert.triggered", _src, tier_config.alert_police))
+        hooks.send_police_alert(coords, core.settings.police_jobs, core.settings.on_duty_only_alerts, translate("police_alerts.alert_notify"))
+    else
+        log("debug", translate("police_alert.rng_failed", _src, tier_config.alert_police))
+    end
+end)
 
 --- Cleanup on disconnect
 AddEventHandler('playerDropped', function()

@@ -35,12 +35,12 @@ shared_scripts {
     "init.lua",
     "src/shared/*.lua",
 
-    "custom/configs/*.lua",
     "custom/hooks.lua"
 }
 client_scripts {
     "src/client/**/*.lua"
 }
 server_scripts {
+    "custom/configs/*.lua",
     "src/server/**/*.lua"
 }

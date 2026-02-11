@@ -190,9 +190,14 @@ RegisterServerEvent("blackmarket:sv:request_menu", function()
     local rep_record = db.get_or_create(identifier)
     local rep_points = rep_record.reputation
     
-    local can_give_menu = true -- @todo replace with some method? police counts? no available locs? etc.
+    local total_police, on_duty_police = hooks.count_players_by_job(core.settings.police_jobs, true)
+    local required_count = core.settings.on_duty_only_required and on_duty_police or total_police
+    local can_give_menu = required_count >= core.settings.required_police
     if not can_give_menu then
         TriggerClientEvent("blackmarket:cl:set_text", _src, translate("burner.messages.response_busy"), true, true)
+        SetTimeout(2000, function()
+            TriggerClientEvent("blackmarket:cl:close_phone", _src)
+        end)
         return
     end
     
@@ -223,18 +228,27 @@ RegisterServerEvent("blackmarket:sv:confirm_order", function(item_id)
     local ok, err = validate_cooldown(_src)
     if not ok then
         TriggerClientEvent("blackmarket:cl:set_text", _src, translate(err), true, true)
+        SetTimeout(2000, function()
+            TriggerClientEvent("blackmarket:cl:close_phone", _src)
+        end)
         return
     end
     
     local ok, err = validate_menu(_src)
     if not ok then
         TriggerClientEvent("blackmarket:cl:set_text", _src, translate(err), true, true)
+        SetTimeout(2000, function()
+            TriggerClientEvent("blackmarket:cl:close_phone", _src)
+        end)
         return
     end
     
     local ok, err = validate_item(item_id)
     if not ok then
         TriggerClientEvent("blackmarket:cl:set_text", _src, translate(err), true, true)
+        SetTimeout(2000, function()
+            TriggerClientEvent("blackmarket:cl:close_phone", _src)
+        end)
         return
     end
     
@@ -243,6 +257,9 @@ RegisterServerEvent("blackmarket:sv:confirm_order", function(item_id)
     local ok, err = validate_rep_requirement(menu.rep_points, item_id)
     if not ok then
         TriggerClientEvent("blackmarket:cl:set_text", _src, translate(err), true, true)
+        SetTimeout(2000, function()
+            TriggerClientEvent("blackmarket:cl:close_phone", _src)
+        end)
         return
     end
     
@@ -255,11 +272,17 @@ RegisterServerEvent("blackmarket:sv:confirm_order", function(item_id)
     local ok, err = validate_transaction(_src, item_id, final_price, final_quantity)
     if not ok then
         TriggerClientEvent("blackmarket:cl:set_text", _src, translate(err), true, true)
+        SetTimeout(2000, function()
+            TriggerClientEvent("blackmarket:cl:close_phone", _src)
+        end)
         return
     end
     
     if not hooks.remove_payment(_src, price_config.payment_method, "balance", final_price) then
         TriggerClientEvent("blackmarket:cl:set_text", _src, translate("burner.messages.payment_failed"), true, true)
+        SetTimeout(2000, function()
+            TriggerClientEvent("blackmarket:cl:close_phone", _src)
+        end)
         return
     end
     
@@ -285,7 +308,7 @@ end)
 --- @section Clean Up
 
 --- Cleanup menu on player disconnect
-AddEventHandler('playerDropped', function()
+AddEventHandler("playerDropped", function()
     local _src = source
     active_menus[_src] = nil
 end)

@@ -9,7 +9,7 @@ return {
         alert_police = 25 
     },
     [3] = { -- Below Average
-        alert_police = 40 
+        alert_police = 40
     },
     [2] = { -- Above Average
         alert_police = 65 

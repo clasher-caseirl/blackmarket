@@ -141,6 +141,10 @@ return {
             need_lockpick = "You need a lockpick",
             someone_stole = "Someone stole your delivery!"
         }
+    },
+
+    police_alerts = {
+        alert_notify = "10-66 | Suspicious Activity Detected"
     }
 
 }

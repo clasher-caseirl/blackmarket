@@ -93,7 +93,7 @@ if core.is_server then
         end
 
         local item_weight = (item_info.weight or 1) * quantity
-        local free_weight = exports['qb-inventory']:GetFreeWeight(source)
+        local free_weight = exports["qb-inventory"]:GetFreeWeight(source)
 
         return free_weight >= item_weight
     end
@@ -133,7 +133,7 @@ if core.is_server then
         if not player then log("error", "Player missing.") return false end
 
         local item_info = QBCore.Shared.Items[item_id]
-        TriggerClientEvent('qb-inventory:client:ItemBox', source, item_info, "add", quantity)
+        TriggerClientEvent("qb-inventory:client:ItemBox", source, item_info, "add", quantity)
 
         return player.Functions.AddItem(item_id, quantity)
     end
@@ -150,7 +150,7 @@ if core.is_server then
         if not player then log("error", "Player missing.") return false end
 
         local item_info = QBCore.Shared.Items[item_id]
-        TriggerClientEvent('qb-inventory:client:ItemBox', source, item_info, "remove", quantity)
+        TriggerClientEvent("qb-inventory:client:ItemBox", source, item_info, "remove", quantity)
 
         return player.Functions.RemoveItem(item_id, quantity)
     end
@@ -158,7 +158,7 @@ if core.is_server then
     --- Checks if a player has a specified job from a table of job names
     --- Optionally check if the player is "on duty"
     --- @param source number: Player source
-    --- @param job_names table: Table of applicable jobs "{ 'police', 'fib' }"
+    --- @param job_names table: Table of applicable jobs "{ "police", "fib" }"
     --- @param check_on_duty boolean: True only counts if on duty
     --- @return boolean: Success
     function hooks.player_has_job(source, job_names, check_on_duty) 
@@ -181,7 +181,7 @@ if core.is_server then
 
     --- Gets the amount of players with jobs from a table of job names
     --- Optionally only count players who are "on duty"
-    --- @param job_names table: Table of applicable jobs "{ 'police', 'fib' }"
+    --- @param job_names table: Table of applicable jobs "{ "police", "fib" }"
     --- @param check_on_duty boolean: True counts on duty, will return both values
     --- @return number, number: Total players with job; total on duty
     function hooks.count_players_by_job(job_names, check_on_duty) 
@@ -209,8 +209,25 @@ if core.is_server then
         return total_with_job, total_on_duty
     end
 
+    --- Sends a police alert to all police jobs
+    --- @param coords vector3: World coordinates of the alert
+    --- @param job_names table: Table of job names to alert
+    --- @param on_duty boolean: Only send to on duty players
+    --- @param label string: Alert message/label
+    function hooks.send_police_alert(coords, job_names, on_duty, label)
+
+        --- @example QBCore
+        local players = QBCore.Functions.GetPlayers()
+        
+        for _, player_source in ipairs(players) do
+            if hooks.player_has_job(player_source, job_names, on_duty) then
+                TriggerClientEvent("blackmarket:cl:police_alert", player_source, coords, label)
+            end
+        end
+    end
+
     --- Handles sending notifications to players
-    --- Modify this function to integrate with your framework's notification system
+    --- Modify this function to integrate with your framework"s notification system
     --- The default implementation uses the built-in notification system
     --- Inbound options:
     ---   type: "info" | "success" | "error" | "warning" (default: "info")
@@ -224,7 +241,9 @@ if core.is_server then
         if not source or not opts then return end
 
         --- @example QBCore
-        TriggerClientEvent('QBCore:Notify', source, opts.message, opts.type or 'primary', opts.duration or 4000)
+        local notify_type = opts.type == "info" and "primary" or opts.type
+
+        TriggerClientEvent("QBCore:Notify", source, opts.message, notify_type, opts.duration or 4000)
     end
 
 end
@@ -233,10 +252,10 @@ end
 
 if not core.is_server then
 
-    local QBCore = exports['qb-core']:GetCoreObject()
+    local QBCore = exports["qb-core"]:GetCoreObject()
 
     --- Handles displaying notifications on the client
-    --- Modify this function to integrate with your framework's notification system
+    --- Modify this function to integrate with your framework"s notification system
     --- The default implementation uses the built-in notification system 
     --- Inbound options:
     ---   type: "info" | "success" | "error" | "warning" (default: "info")
@@ -249,7 +268,9 @@ if not core.is_server then
         if not opts then return end
 
         --- @example QBCore
-        QBCore.Functions.Notify(opts.message, opts.type or 'primary', opts.duration or 4000)
+        local notify_type = opts.type == "info" and "primary" or opts.type
+
+        QBCore.Functions.Notify(opts.message, notify_type, opts.duration or 4000)
     end
 
     --- Start lockpick minigame
@@ -259,10 +280,60 @@ if not core.is_server then
 
         --- @example QBCore
         local rng = math.floor(math.random(2, 6))
-        
-        local success = exports['qb-minigames']:Lockpick(rng)
+
+        local success = exports["qb-minigames"]:Lockpick(rng)
         callback({ success = success })
     end
+
+    --- Displays a police alert on the client
+    --- Handles notification, sound, and blip creation
+    --- @param opts table: Alert options containing coords and label
+    function hooks.display_police_alert(opts)
+        if not opts or not opts.coords or not opts.label then return end
+
+        --- @example Standalone Method
+        hooks.send_notification({ type = "info", header = "DISPATCH ALERT", message = opts.label, duration = 5000 })
+
+        PlaySound(-1, "Lose_1st", "GTAO_FM_Events_Soundset", 0, 0, 1)
+
+        local blip = AddBlipForCoord(opts.coords)
+        SetBlipSprite(blip, 161)
+        SetBlipColour(blip, 1)
+        SetBlipScale(blip, 2.0)
+        SetBlipAsShortRange(blip, true)
+        BeginTextCommandSetBlipName("STRING")
+        AddTextComponentString(opts.label)
+        EndTextCommandSetBlipName(blip)
+
+        local alpha = 250
+        local duration = 20000
+        local start_time = GetGameTimer()
+        local step_time = 100
+        local steps = duration / step_time
+        local alpha_decrement = alpha / steps
+
+        CreateThread(function()
+            while alpha > 0 do
+                alpha = alpha - alpha_decrement
+                if alpha <= 0 then
+                    RemoveBlip(blip)
+                    return
+                end
+                SetBlipAlpha(blip, math.floor(alpha))
+                Wait(step_time)
+            end
+        end)
+
+        CreateThread(function()
+            local color_palette = {1, 29}
+            local color_index = 1
+            while alpha > 0 do
+                color_index = color_index % #color_palette + 1
+                SetBlipColour(blip, color_palette[color_index])
+                Wait(750)
+            end
+        end)
+    end 
 
 end
 

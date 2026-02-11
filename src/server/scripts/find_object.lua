@@ -8,7 +8,6 @@ local item_defs = require("custom.configs.items")
 
 local db = require("src.server.modules.database")
 
-
 --- @section Variables
 
 local active_drops = {}
@@ -210,7 +209,7 @@ end)
 --- @section Clean Up
 
 --- Cleanup drops on player disconnect
-AddEventHandler('playerDropped', function()
+AddEventHandler("playerDropped", function()
     local _src = source
     
     for drop_id, _ in pairs(active_drops) do
