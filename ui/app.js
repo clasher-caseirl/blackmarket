@@ -26,7 +26,7 @@ handlers.set_text = (data) => {
  * Set phone menu
  */
 handlers.set_menu = (data) => {
-    phone.set_menu(data.items);
+    phone.set_menu(data.items, data.rep_level);
 };
 
 /**
@@ -62,7 +62,7 @@ window.addEventListener("message", (event) => {
 /**
  * Test stuff - uncomment to test UI in browser
  */
-/*
+
 handlers.build({ brand: "CELLTOWA" });
 handlers.set_text({ text: "Yo got supply in?", is_message: true, send: true });
 
@@ -77,6 +77,8 @@ window.test_menu = () => {
         { id: 'heroin', name: 'Heroin', price: 500, quantity: 3 },
         { id: 'mdma', name: 'MDMA', price: 175, quantity: 5 },
         { id: 'meth', name: 'Meth', price: 300, quantity: 1 },
+        { id: 'meth2', name: 'Meth2', price: 300, quantity: 1 },
+        { id: 'meth3', name: 'Meth3', price: 300, quantity: 1 },
     ]);
 };
 
@@ -87,4 +89,3 @@ window.test_unavailable = () => {
 window.test_home = () => {
     phone.set_screen('home');
 };
-*/

@@ -155,6 +155,60 @@ if core.is_server then
         return player.Functions.RemoveItem(item_id, quantity)
     end
 
+    --- Checks if a player has a specified job from a table of job names
+    --- Optionally check if the player is "on duty"
+    --- @param source number: Player source
+    --- @param job_names table: Table of applicable jobs "{ 'police', 'fib' }"
+    --- @param check_on_duty boolean: True only counts if on duty
+    --- @return boolean: Success
+    function hooks.player_has_job(source, job_names, check_on_duty) 
+        local player = QBCore.Functions.GetPlayer(source)
+        if not player then return false end
+
+        local job = player.PlayerData.job
+        
+        for _, job_name in ipairs(job_names) do
+            if job.name == job_name then
+                if check_on_duty then
+                    return job.onduty == true
+                end
+                return true
+            end
+        end
+        
+        return false
+    end
+
+    --- Gets the amount of players with jobs from a table of job names
+    --- Optionally only count players who are "on duty"
+    --- @param job_names table: Table of applicable jobs "{ 'police', 'fib' }"
+    --- @param check_on_duty boolean: True counts on duty, will return both values
+    --- @return number, number: Total players with job; total on duty
+    function hooks.count_players_by_job(job_names, check_on_duty) 
+        local players = QBCore.Functions.GetPlayers()
+        local total_with_job = 0
+        local total_on_duty = 0
+
+        for _, player_source in ipairs(players) do
+            local player = QBCore.Functions.GetPlayer(player_source)
+            
+            if player then
+                local job = player.PlayerData.job
+                for _, job_name in ipairs(job_names) do
+                    if job.name == job_name then
+                        total_with_job = total_with_job + 1
+                        if job.onduty then
+                            total_on_duty = total_on_duty + 1
+                        end
+                        break
+                    end
+                end
+            end
+        end
+
+        return total_with_job, total_on_duty
+    end
+
     --- Handles sending notifications to players
     --- Modify this function to integrate with your framework's notification system
     --- The default implementation uses the built-in notification system
@@ -204,7 +258,9 @@ if not core.is_server then
         if not callback then return { success = false } end 
 
         --- @example QBCore
-        local success = exports['qb-minigames']:Lockpick(3)
+        local rng = math.floor(math.random(2, 6))
+        
+        local success = exports['qb-minigames']:Lockpick(rng)
         callback({ success = success })
     end
 

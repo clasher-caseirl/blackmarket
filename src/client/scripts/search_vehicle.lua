@@ -3,9 +3,12 @@
 
 --- @section Modules
 
-local blips = require("src.client.modules.blips")
 local vehicles = require("lib.vehicles")
+local requests = require("lib.requests")
+
 local hooks = require("custom.hooks")
+
+local blips = require("src.client.modules.blips")
 
 --- @section Variables
 

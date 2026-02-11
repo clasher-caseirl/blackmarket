@@ -3,10 +3,12 @@
 
 --- @section Modules
 
-local hooks = require("custom.hooks")
 local vehicles = require("lib.vehicles")
-local db = require("src.server.modules.database")
+
+local hooks = require("custom.hooks")
 local item_defs = require("custom.configs.items")
+
+local db = require("src.server.modules.database")
 
 --- @section Variables
 
@@ -14,7 +16,7 @@ local active_vehicles = {}
 
 --- @section Helper Functions
 
---- Validate player exists and is online
+--- Validate player exists and is onlinee
 --- @param source number: Player server ID
 --- @return boolean: True if player is valid
 local function validate_player(source)
@@ -232,6 +234,8 @@ RegisterServerEvent("blackmarket:sv:search_vehicle", function(vehicle_id)
         core.complete_search_vehicle(_src, vehicle_id)
     end)
 end)
+
+--- @section Clean Up
 
 --- Cleanup all vehicles on resource stop
 AddEventHandler('onResourceStop', function(res)

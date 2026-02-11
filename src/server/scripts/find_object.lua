@@ -4,8 +4,10 @@
 --- @section Modules
 
 local hooks = require("custom.hooks")
-local db = require("src.server.modules.database")
 local item_defs = require("custom.configs.items")
+
+local db = require("src.server.modules.database")
+
 
 --- @section Variables
 
@@ -205,6 +207,7 @@ RegisterServerEvent("blackmarket:sv:pickup_complete", function(drop_id)
     log("debug", translate("find_object.pickup_completed", _src, drop_id))
 end)
 
+--- @section Clean Up
 
 --- Cleanup drops on player disconnect
 AddEventHandler('playerDropped', function()

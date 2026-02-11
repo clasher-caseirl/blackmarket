@@ -112,6 +112,7 @@ core.settings = {
     startup_message_enabled = settings.startup_message or false,
     use_target = settings.use_target or false,
     phone_prop = settings.phone_prop or "prop_v_m_phone_o1s",
+    menu_order_cooldown = settings.menu_order_cooldown or 600
     rear_engine_vehicles = settings.rear_engine_vehicles or {
         adder = true,
         ardent = true,

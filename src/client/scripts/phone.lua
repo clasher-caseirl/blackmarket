@@ -3,9 +3,10 @@
 
 --- @section Modules
 
-local settings = require("custom.settings")
 local animations = require("lib.animations")
 local requests = require("lib.requests")
+
+local settings = require("custom.settings")
 
 --- @section Variables
 

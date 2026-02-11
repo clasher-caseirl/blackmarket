@@ -6,6 +6,7 @@ export class Phone {
         this.menu_items = [];
         this.is_message = false;
         this.is_sending = false;
+        this.rep_level = 1;
         this.screen_text = '';  
         this.soft_keys = [
             { key: 'call', label: '<i class="fa-solid fa-phone"></i>', class: 'call_btn' },
@@ -122,6 +123,7 @@ export class Phone {
                         </div>
                     `).join('')}
                 </div>
+                <div class="text_footer">REP LVL: ${this.rep_level || 1}</div>
             </div>
         `;
     }
@@ -213,9 +215,10 @@ export class Phone {
         type();
     }
 
-    set_menu(items) {
+    set_menu(items, level) {
         this.menu_items = items;
         this.menu_selected = 0;
+        this.rep_level = level;
         this.current_screen = 'menu';
         this.update_screen();
     }

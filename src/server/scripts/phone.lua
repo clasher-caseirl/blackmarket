@@ -6,13 +6,25 @@
 local item_defs = require("custom.configs.items")
 local level_defs = require("custom.configs.levels")
 local hooks = require("custom.hooks")
+
 local db = require("src.server.modules.database")
+
 local cooldowns = require("lib.cooldowns")
 
 --- @section Variables
 
 local active_menus = {}
-local ORDER_COOLDOWN = 1800
+
+--- @section Item Registration
+
+local function register_phone()
+    hooks.register_usable_item("blackmarket_phone", function(source)
+        TriggerClientEvent("blackmarket:cl:open_burner", source)
+    end)
+end
+SetTimeout(50, function()
+    register_phone()
+end)
 
 --- @section Functions
 
@@ -45,10 +57,11 @@ end
 
 --- Get reputation level from points
 --- @param rep_points integer: Player reputation points
---- @return integer: Reputation level (1-10)
-local function get_rep_level(rep_points)
-    for level = 10, 1, -1 do
-        if rep_points >= level_defs[level].rep_range.min then
+--- @param level_defs table: Level definitions table
+--- @return integer: Reputation level
+local function get_rep_level(rep_points, level_defs)
+    for level = #level_defs, 1, -1 do
+        if rep_points >= level_defs[level].range.min then
             return level
         end
     end
@@ -95,12 +108,13 @@ local function build_menu(rep_points)
                 local quantity_config = item_cfg(item_id, "quantity")
                 local final_price = calculate_price(price_config.base, rep_points, item_id)
                 local final_quantity = calculate_quantity(quantity_config.base, rep_points, item_id)
+                local rep_level = get_rep_level(rep_points, level_defs)
                 
                 menu_items[#menu_items + 1] = { id = item_id, name = item_def.label, price = final_price, quantity = final_quantity }
             end
         end
     end
-    return menu_items
+    return menu_items, rep_level
 end
 
 --- Validate order cooldown
@@ -184,7 +198,7 @@ RegisterServerEvent("blackmarket:sv:request_menu", function()
     
     active_menus[_src] = { identifier = identifier, rep_points = rep_points, timestamp = GetGameTimer() }
     
-    local menu_items = build_menu(rep_points)
+    local menu_items, rep_level = build_menu(rep_points, level_defs)
 
     core.timeout_chain({
         { delay = 1500, fn = function()
@@ -194,7 +208,7 @@ RegisterServerEvent("blackmarket:sv:request_menu", function()
             TriggerClientEvent("blackmarket:cl:set_text", _src, translate("burner.messages.received_menu"))
         end },
         { delay = 2000, fn = function()
-            TriggerClientEvent("blackmarket:cl:set_menu", _src, menu_items)
+            TriggerClientEvent("blackmarket:cl:set_menu", _src, menu_items, rep_level)
             TriggerClientEvent("blackmarket:cl:toggle_nui_focus", _src)
         end }
     })
@@ -264,9 +278,11 @@ RegisterServerEvent("blackmarket:sv:confirm_order", function(item_id)
     log("success", translate("deliveries.order_confirmed", menu.identifier, final_quantity, item_id, final_price))
 
     core.start_delivery(_src, order_data)
-    cooldowns.add(_src, "blackmarket_order", ORDER_COOLDOWN, false)
+    cooldowns.add(_src, "blackmarket_order", core.settings.menu_order_cooldown, false)
     active_menus[_src] = nil
 end)
+
+--- @section Clean Up
 
 --- Cleanup menu on player disconnect
 AddEventHandler('playerDropped', function()

@@ -3,9 +3,10 @@
 
 --- @section Modules
 
+local animations = require("lib.animations")
+
 local blips = require("src.client.modules.blips")
 local objects = require("src.client.modules.objects")
-local animations = require("lib.animations")
 
 --- @section Constants
 

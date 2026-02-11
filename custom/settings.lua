@@ -6,6 +6,7 @@ return {
     debug = true, -- Toggle debug logging throughout
     startup_message = true, -- Prints start up message to console if enabled
     phone_prop = "prop_v_m_phone_o1s", -- Prop model to attach to player when using phone
+    menu_order_cooldown = 600, -- Cooldown time for placing new orders in seconds 600 = 10min, 1200 = 20min etc..
     rear_engine_vehicles = { -- List of rear engine vehicles
         adder = true,
         ardent = true,
