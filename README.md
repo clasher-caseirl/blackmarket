@@ -1,4 +1,10 @@
-# QBCore Community Clash Event #1: Blackmarket
+![clash-market-thumb](https://github.com/user-attachments/assets/6af420e9-9e41-43cd-81f8-dc452115c09d)
+
+# Preview
+
+https://www.youtube.com/watch?v=zZmgB5uQ9Pc
+
+## QBCore Community Clash Event #1: Blackmarket
 
 A blackmarket script built for QBCore Community Clash Event #1 that's probably a little "more" than really needed.
 
@@ -8,7 +14,7 @@ A blackmarket script built for QBCore Community Clash Event #1 that's probably a
 
 ---
 
-## What You're Getting
+### What You're Getting
 
 - **Phone-based ordering system:** Burner phone item, menus scaled by reputation, real-time pricing adjustments.
 - **Full dead drop system:** Two methods to grab your goods. Small packages hidden in zones, big shipments stashed in vehicles. You get coords, you go find it.
@@ -20,34 +26,34 @@ A blackmarket script built for QBCore Community Clash Event #1 that's probably a
 
 ---
 
-## Core Features
+### Core Features
 
-### Phone System
+#### Phone System
 - Usable burner phone item
 - Dynamic menu based on player reputation
 - Real-time price scaling tied to rep points
 - Item availability gated by reputation requirements
 - Cooldown system to prevent spam ordering
 
-### Dead Drops Methods
+#### Dead Drops Methods
 1. **Find Object:** Search zone radius for hidden package
 2. **Search Vehicle:** Loot a spawned vehicle for goods
 
-### Police Alerts
+#### Police Alerts
 - Automatic zone scumminess detection
 - RNG-based alert system (not every deal gets hot)
 - Blip creation with 20-second fade
 - Sound + notification feedback
 - Configurable alert jobs (police, fib, swat, etc.)
 
-### Reputation System
+#### Reputation System
 - Persistent reputation tracking per player
 - Reputation affects pricing (up to 50% discount)
 - Reputation affects quantity (up to 50% more goods)
 - Reputation gates items (can't buy until you hit the threshold)
 - Reputation levels with custom labels
 
-### Anti-Spam & Validation
+#### Anti-Spam & Validation
 - Active delivery checks (can't order while already delivering)
 - Police count requirements (need X officers online)
 - Rep requirement checks
@@ -57,7 +63,7 @@ A blackmarket script built for QBCore Community Clash Event #1 that's probably a
 
 ---
 
-## Why This Script Slaps
+### Why This Script Slaps
 
 - **Because other blackmarket scripts are lazy:** Most are just phone menus. This one actually has mechanics.
 - **Because zone-aware heat is actually cool:** Your players will learn fast: expensive areas = heat. Poor areas = quiet. Strategy.
@@ -68,10 +74,10 @@ A blackmarket script built for QBCore Community Clash Event #1 that's probably a
 
 ---
 
-## Dependencies
+### Dependencies
 - oxmysql
 
-### Optional
+#### Optional
 
 Script is technically standalone aside for `oxmysql` everything framework related runs through a single `hooks.lua` file.
 Change this file to whatever you need for your server and this will run on anything. 
@@ -82,7 +88,7 @@ Change this file to whatever you need for your server and this will run on anyth
 
 ---
 
-## Quick Install
+### Quick Install
  
 1. Add `blackmarket` into your server resources
 2. Add `ensure blackmarket` into your `server.cfg`
@@ -94,7 +100,7 @@ For customising, creating zones etc refer to the `.DOCUMENTATION` folder for ful
 
 ---
 
-## Support
+### Support
 
 This is not really something I plan to support heavily.
 However, you can always give me a shout in either:
